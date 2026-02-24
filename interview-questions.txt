@@ -1,0 +1,38 @@
+Interview Questions — Based on Pokedex/src/types.ts
+=====================================================
+
+Q1. What is a TypeScript `interface`, and why do we use one here?
+-----------------------------------------------------------------
+A: An interface is a way to describe the shape of an object — it lists the
+   property names and their types. We use interfaces here so TypeScript knows
+   exactly what fields a Pokémon object has (id, name, height, etc.). If you
+   accidentally try to access a field that doesn't exist, TypeScript will warn
+   you before you even run the code.
+
+Q2. Why does every interface in this file start with the `export` keyword?
+--------------------------------------------------------------------------
+A: Without `export`, the interfaces only exist inside this file and cannot be
+   used anywhere else. Adding `export` makes them available for other files to
+   import. Without it, TypeScript treats the file as a plain script (not a module) and
+   you get the error "File is not a module".
+
+Q5. Why does `PokemonType` have a nested `type` object instead of just a `name` string?
+----------------------------------------------------------------------------------------
+A: The PokéAPI always wraps names in an object like `{ name: "fire", url: "…" }`
+   so you can follow the URL to get more details. `PokemonType` mirrors that
+   shape exactly. 
+
+Q6. Why is `"official-artwork"` written with quotes in the interface?
+----------------------------------------------------------------------
+A: The hyphen (-) in `official-artwork` makes it an invalid JavaScript
+   identifier, so it cannot be used with dot notation. Wrapping it in quotes
+   inside the interface definition, and accessing it with bracket notation in
+   code (`sprites.other["official-artwork"]`), is the correct way to handle
+   property names that contain special characters.
+
+Q8. What is the difference between `PokemonListItem` and `PokemonData`?
+-----------------------------------------------------------------------
+A: `PokemonListItem` is the small summary you get from the list endpoint — just
+   a name and a URL. `PokemonData` is the full detail object you get when you
+   follow that URL. You typically fetch the list first to show all Pokémon names,
+   then fetch the individual URL only when the user clicks on one.
