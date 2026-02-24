@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex - Generation 1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+</head>
+
+<body>
+
+    <!-- Header / Navigation -->
+    <header class="animate__animated animate__fadeInDown">
+        <div class="logo">
+            <span class="pokeball-icon">🔴</span>
+            <h1>Pokédex</h1>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search by name or number..."
+                aria-label="Search Pokémon by name or number">
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- Filter Section -->
+        <section class="filter-section animate__animated animate__fadeIn" aria-label="Filter options">
+            <div class="filter-container">
+                <label for="type-filter">Filter by Type:</label>
+                <select id="type-filter" name="type-filter">
+                    <option value="all">All Types</option>
+                    <option value="normal">Normal</option>
+                    <option value="fire">Fire</option>
+                    <option value="water">Water</option>
+                    <option value="electric">Electric</option>
+                    <option value="grass">Grass</option>
+                    <option value="ice">Ice</option>
+                    <option value="fighting">Fighting</option>
+                    <option value="poison">Poison</option>
+                    <option value="ground">Ground</option>
+                    <option value="flying">Flying</option>
+                    <option value="psychic">Psychic</option>
+                    <option value="bug">Bug</option>
+                    <option value="rock">Rock</option>
+                    <option value="ghost">Ghost</option>
+                    <option value="dragon">Dragon</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-container" aria-live="polite">
+            <div class="spinner" role="status">
+                <span class="visually-hidden">Loading Pokémon...</span>
+            </div>
+            <p>Loading Pokémon...</p>
+        </div>
+
+        <!-- Error State (Hidden by default) -->
+        <div id="error-state" class="error-container" role="alert" hidden>
+            <p>⚠️ Failed to load Pokémon data. Please check your connection and try again.</p>
+            <button id="retry-button">Retry</button>
+        </div>
+
+        <!-- Pokemon Grid -->
+        <section id="pokemon-grid" class="pokemon-grid" aria-label="Pokémon list">
+            <!-- Pokemon cards will be dynamically inserted here -->
+
+            <!-- Example Card Structure (for reference) -->
+            <article class="pokemon-card" data-id="1" tabindex="0" role="button" aria-label="View Bulbasaur details">
+                <span class="pokemon-number">#001</span>
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"
+                    alt="Bulbasaur sprite" class="pokemon-sprite" loading="lazy">
+                <h2 class="pokemon-name">Bulbasaur</h2>
+                <div class="pokemon-types">
+                    <span class="type-badge type-grass">Grass</span>
+                    <span class="type-badge type-poison">Poison</span>
+                </div>
+            </article>
+
+            <article class="pokemon-card" data-id="2" tabindex="0" role="button" aria-label="View Ivysaur details">
+                <span class="pokemon-number">#002</span>
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png"
+                    alt="Ivysaur sprite" class="pokemon-sprite" loading="lazy">
+                <h2 class="pokemon-name">Ivysaur</h2>
+                <div class="pokemon-types">
+                    <span class="type-badge type-grass">Grass</span>
+                    <span class="type-badge type-poison">Poison</span>
+                </div>
+            </article>
+
+            <article class="pokemon-card" data-id="3" tabindex="0" role="button" aria-label="View Venusaur details">
+                <span class="pokemon-number">#003</span>
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png"
+                    alt="Venusaur sprite" class="pokemon-sprite" loading="lazy">
+                <h2 class="pokemon-name">Venusaur</h2>
+                <div class="pokemon-types">
+                    <span class="type-badge type-grass">Grass</span>
+                    <span class="type-badge type-poison">Poison</span>
+                </div>
+            </article>
+
+            <article class="pokemon-card" data-id="25" tabindex="0" role="button" aria-label="View Pikachu details">
+                <span class="pokemon-number">#025</span>
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png"
+                    alt="Pikachu sprite" class="pokemon-sprite" loading="lazy">
+                <h2 class="pokemon-name">Pikachu</h2>
+                <div class="pokemon-types">
+                    <span class="type-badge type-electric">Electric</span>
+                </div>
+            </article>
+
+            <article class="pokemon-card" data-id="4" tabindex="0" role="button" aria-label="View Charmander details">
+                <span class="pokemon-number">#004</span>
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png"
+                    alt="Charmander sprite" class="pokemon-sprite" loading="lazy">
+                <h2 class="pokemon-name">Charmander</h2>
+                <div class="pokemon-types">
+                    <span class="type-badge type-fire">Fire</span>
+                </div>
+            </article>
+
+            <article class="pokemon-card" data-id="7" tabindex="0" role="button" aria-label="View Squirtle details">
+                <span class="pokemon-number">#007</span>
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png"
+                    alt="Squirtle sprite" class="pokemon-sprite" loading="lazy">
+                <h2 class="pokemon-name">Squirtle</h2>
+                <div class="pokemon-types">
+                    <span class="type-badge type-water">Water</span>
+                </div>
+            </article>
+        </section>
+
+        <!-- Load More / Pagination -->
+        <div class="load-more-container">
+            <button id="load-more-button" class="load-more-btn">
+                Load More Pokémon
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Detail Modal (Hidden by default) -->
+    <div id="pokemon-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <button id="modal-back-button" class="back-button" aria-label="Close modal">
+                    ← Back
+                </button>
+                <h2 id="modal-title" class="modal-pokemon-name">
+                    <span class="pokemon-number">#025</span> Pikachu
+                </h2>
+                <button id="modal-close-button" class="close-button" aria-label="Close modal">×</button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+
+                <!-- Image Section -->
+                <div class="modal-image-container">
+                    <img id="modal-image"
+                        src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
+                        alt="Pikachu official artwork" class="modal-pokemon-image">
+                </div>
+
+                <!-- Info Section -->
+                <div class="modal-info">
+
+                    <!-- Basic Info -->
+                    <div class="info-section">
+                        <h3>Type</h3>
+                        <div id="modal-types" class="pokemon-types">
+                            <span class="type-badge type-electric">Electric</span>
+                        </div>
+                    </div>
+
+                    <div class="physical-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Height:</span>
+                            <span id="modal-height" class="stat-value">0.4 m</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Weight:</span>
+                            <span id="modal-weight" class="stat-value">6.0 kg</span>
+                        </div>
+                    </div>
+
+                    <!-- Base Stats -->
+                    <div class="info-section">
+                        <h3>Base Stats</h3>
+                        <div id="modal-stats" class="stats-container">
+                            <div class="stat-row">
+                                <span class="stat-name">HP</span>
+                                <div class="stat-bar-container">
+                                    <div class="stat-bar" style="width: 45%;" role="progressbar" aria-valuenow="45"
+                                        aria-valuemin="0" aria-valuemax="255"></div>
+                                </div>
+                                <span class="stat-number">45</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-name">Attack</span>
+                                <div class="stat-bar-container">
+                                    <div class="stat-bar" style="width: 49%;" role="progressbar" aria-valuenow="49"
+                                        aria-valuemin="0" aria-valuemax="255"></div>
+                                </div>
+                                <span class="stat-number">49</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-name">Defense</span>
+                                <div class="stat-bar-container">
+                                    <div class="stat-bar" style="width: 40%;" role="progressbar" aria-valuenow="40"
+                                        aria-valuemin="0" aria-valuemax="255"></div>
+                                </div>
+                                <span class="stat-number">40</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-name">Sp. Atk</span>
+                                <div class="stat-bar-container">
+                                    <div class="stat-bar" style="width: 65%;" role="progressbar" aria-valuenow="65"
+                                        aria-valuemin="0" aria-valuemax="255"></div>
+                                </div>
+                                <span class="stat-number">65</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-name">Sp. Def</span>
+                                <div class="stat-bar-container">
+                                    <div class="stat-bar" style="width: 65%;" role="progressbar" aria-valuenow="65"
+                                        aria-valuemin="0" aria-valuemax="255"></div>
+                                </div>
+                                <span class="stat-number">65</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-name">Speed</span>
+                                <div class="stat-bar-container">
+                                    <div class="stat-bar" style="width: 90%;" role="progressbar" aria-valuenow="90"
+                                        aria-valuemin="0" aria-valuemax="255"></div>
+                                </div>
+                                <span class="stat-number">90</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Abilities -->
+                    <div class="info-section">
+                        <h3>Abilities</h3>
+                        <ul id="modal-abilities" class="abilities-list">
+                            <li>Static</li>
+                            <li>Lightning Rod</li>
+                        </ul>
+                    </div>
+
+                    <!-- Moves -->
+                    <div class="info-section">
+                        <h3>Moves</h3>
+                        <ul id="modal-moves" class="moves-list">
+                            <li>Thunder Shock</li>
+                            <li>Growl</li>
+                            <li>Tail Whip</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Data provided by <a href="https://pokeapi.co/" target="_blank" rel="noopener noreferrer">PokéAPI</a></p>
+        <p>Project Pokédex © 2026</p>
+    </footer>
+
+    <script type="module" src="src/main.ts"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+    </script>
+</body>
+
+</html>
