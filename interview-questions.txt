@@ -1,38 +1,65 @@
-Interview Questions — Based on Pokedex/src/types.ts
-=====================================================
+Interview Questions
+===================
+
+────────────────────────────────────────────────────────────
+SECTION 1 — Based on src/types.ts
+────────────────────────────────────────────────────────────
 
 Q1. What is a TypeScript `interface`, and why do we use one here?
 -----------------------------------------------------------------
-A: An interface is a way to describe the shape of an object — it lists the
-   property names and their types. We use interfaces here so TypeScript knows
-   exactly what fields a Pokémon object has (id, name, height, etc.). If you
-   accidentally try to access a field that doesn't exist, TypeScript will warn
-   you before you even run the code.
+A: An interface describes the shape of an object — it lists the property names
+   and their types. We use interfaces here so TypeScript knows exactly what
+   fields a Pokémon object has (id, name, height, etc.). If you accidentally
+   try to access a field that doesn't exist, TypeScript warns you before you
+   even run the code.
 
 Q2. Why does every interface in this file start with the `export` keyword?
 --------------------------------------------------------------------------
 A: Without `export`, the interfaces only exist inside this file and cannot be
    used anywhere else. Adding `export` makes them available for other files to
-   import. Without it, TypeScript treats the file as a plain script (not a module) and
-   you get the error "File is not a module".
+   import. Without it, TypeScript treats the file as a plain script (not a
+   module) and you get the error "File is not a module".
 
-Q5. Why does `PokemonType` have a nested `type` object instead of just a `name` string?
-----------------------------------------------------------------------------------------
+Q3. Why does `PokemonType` have a nested `type` object instead of just a
+    `name` string?
+------------------------------------------------------------------------
 A: The PokéAPI always wraps names in an object like `{ name: "fire", url: "…" }`
    so you can follow the URL to get more details. `PokemonType` mirrors that
-   shape exactly. 
+   shape exactly, which means you access the type name as:
+     pokemon.types[0].type.name   // e.g. "electric"
 
-Q6. Why is `"official-artwork"` written with quotes in the interface?
-----------------------------------------------------------------------
+Q4. Why is `"official-artwork"` written with quotes in the interface?
+---------------------------------------------------------------------
 A: The hyphen (-) in `official-artwork` makes it an invalid JavaScript
-   identifier, so it cannot be used with dot notation. Wrapping it in quotes
-   inside the interface definition, and accessing it with bracket notation in
-   code (`sprites.other["official-artwork"]`), is the correct way to handle
-   property names that contain special characters.
+   identifier, so it cannot be used with dot notation. Quoting the key in the
+   interface and accessing it with bracket notation
+   (`sprites.other["official-artwork"]`) is the correct approach.
 
-Q8. What is the difference between `PokemonListItem` and `PokemonData`?
+Q5. What is the difference between `PokemonListItem` and `PokemonData`?
 -----------------------------------------------------------------------
-A: `PokemonListItem` is the small summary you get from the list endpoint — just
-   a name and a URL. `PokemonData` is the full detail object you get when you
-   follow that URL. You typically fetch the list first to show all Pokémon names,
-   then fetch the individual URL only when the user clicks on one.
+A: `PokemonListItem` is the small summary from the list endpoint — just a name
+   and a URL. `PokemonData` is the full detail object you get when you follow
+   that URL. You typically fetch the list first to show all Pokémon names, then
+   fetch the individual URL only when the user clicks on one.
+
+
+────────────────────────────────────────────────────────────
+SECTION 2 — Based on src/utils.ts
+────────────────────────────────────────────────────────────
+
+Q8. What is a `Record<string, string>` type, and why is it used in
+    `formatStatName`?
+-------------------------------------------------------------------
+A: `Record<K, V>` is a TypeScript built-in that describes an object whose keys
+   are of type K and values are of type V. Here, `Record<string, string>` means
+   "an object where every key and every value is a string" — a simple lookup
+   table. It lets you write `statNameMap["special-attack"]` and TypeScript knows
+   the result is a string (or undefined if the key is missing).
+
+Q9. Why does `formatStatName` use `statNameMap[statName] || statName` instead
+    of just `statNameMap[statName]`?
+------------------------------------------------------------------------------
+A: If `statName` is not in the map, `statNameMap[statName]` returns `undefined`,
+   which would show as "undefined" in the UI. The `|| statName` fallback means
+   "if the lookup fails, just use the original name". This makes the function
+   safe for any stat name the API might add in the future.
