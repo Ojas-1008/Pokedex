@@ -1,0 +1,133 @@
+Interview Questions
+===================
+
+────────────────────────────────────────────────────────────
+SECTION 1 — Based on src/types.ts
+────────────────────────────────────────────────────────────
+
+Q1. What is a TypeScript `interface`, and why do we use one here?
+-----------------------------------------------------------------
+A: An interface describes the shape of an object — it lists the property names
+   and their types. We use interfaces here so TypeScript knows exactly what
+   fields a Pokémon object has (id, name, height, etc.). If you accidentally
+   try to access a field that doesn't exist, TypeScript warns you before you
+   even run the code.
+
+Q2. Why does every interface in this file start with the `export` keyword?
+--------------------------------------------------------------------------
+A: Without `export`, the interfaces only exist inside this file and cannot be
+   used anywhere else. Adding `export` makes them available for other files to
+   import. Without it, TypeScript treats the file as a plain script (not a
+   module) and you get the error "File is not a module".
+
+Q3. Why does `PokemonType` have a nested `type` object instead of just a
+    `name` string?
+------------------------------------------------------------------------
+A: The PokéAPI always wraps names in an object like `{ name: "fire", url: "…" }`
+   so you can follow the URL to get more details. `PokemonType` mirrors that
+   shape exactly, which means you access the type name as:
+     pokemon.types[0].type.name   // e.g. "electric"
+
+Q4. Why is `"official-artwork"` written with quotes in the interface?
+---------------------------------------------------------------------
+A: The hyphen (-) in `official-artwork` makes it an invalid JavaScript
+   identifier, so it cannot be used with dot notation. Quoting the key in the
+   interface and accessing it with bracket notation
+   (`sprites.other["official-artwork"]`) is the correct approach.
+
+Q5. What is the difference between `PokemonListItem` and `PokemonData`?
+-----------------------------------------------------------------------
+A: `PokemonListItem` is the small summary from the list endpoint — just a name
+   and a URL. `PokemonData` is the full detail object you get when you follow
+   that URL. You typically fetch the list first to show all Pokémon names, then
+   fetch the individual URL only when the user clicks on one.
+
+
+────────────────────────────────────────────────────────────
+SECTION 2 — Based on src/utils.ts
+────────────────────────────────────────────────────────────
+
+Q6. What is a `Record<string, string>` type, and why is it used in
+    `formatStatName`?
+-------------------------------------------------------------------
+A: `Record<K, V>` is a TypeScript built-in that describes an object whose keys
+   are of type K and values are of type V. Here, `Record<string, string>` means
+   "an object where every key and every value is a string" — a simple lookup
+   table. It lets you write `statNameMap["special-attack"]` and TypeScript knows
+   the result is a string (or undefined if the key is missing).
+
+Q7. Why does `formatStatName` use `statNameMap[statName] || statName` instead
+    of just `statNameMap[statName]`?
+------------------------------------------------------------------------------
+A: If `statName` is not in the map, `statNameMap[statName]` returns `undefined`,
+   which would show as "undefined" in the UI. The `|| statName` fallback means
+   "if the lookup fails, just use the original name". This makes the function
+   safe for any stat name the API might add in the future.
+
+
+────────────────────────────────────────────────────────────
+SECTION 3 — Based on src/api.ts
+────────────────────────────────────────────────────────────
+
+Q8. What does the `async` keyword do, and why are all three fetch functions
+    marked with it?
+----------------------------------------------------------------------------
+A: `async` tells JavaScript that a function will do something that takes time
+   (like a network request) and will return a Promise. Inside an async function
+   you can use `await` to pause and wait for that result before moving on.
+   All three functions are async because they call `fetch()`, which is a network
+   request that doesn't finish instantly.
+
+Q9. What is `fetch()` and what does it return?
+----------------------------------------------
+A: `fetch()` is a built-in browser/Node function that sends an HTTP request to
+   a URL. It returns a Promise that resolves to a `Response` object. You then
+   call `.json()` on that response to parse the body as JSON — which is also
+   async, so you `await` it too.
+
+Q10. Why do we check `if (!response.ok)` and throw an error?
+------------------------------------------------------------
+A: `fetch()` only rejects its Promise for network failures (e.g. no internet).
+   A server error like 404 or 500 still resolves successfully — `response.ok`
+   is just `false`. Throwing manually means the `catch` block handles both
+   network errors and bad HTTP status codes in one place.
+
+Q11. What is `pokemonCache` and why is it a `Map` instead of a plain object?
+----------------------------------------------------------------------------
+A: `pokemonCache` is an in-memory store that saves Pokémon data after the first
+   fetch so we don't hit the network again for the same Pokémon. A `Map` is
+   preferred over a plain object here because its keys are typed
+   (`Map<number, PokemonData>`), it has built-in `.has()`, `.get()`, and
+   `.set()` methods, and it performs better for frequent lookups and insertions.
+
+Q12. What does the `!` (non-null assertion) do in `pokemonCache.get(id)!`?
+--------------------------------------------------------------------------
+A: `Map.get()` returns `T | undefined` because TypeScript can't be sure the key
+   exists. We already checked `pokemonCache.has(id)` on the line above, so we
+   know the value is there. The `!` tells TypeScript "trust me, this is not
+   undefined" and removes the `undefined` from the type, avoiding a compile
+   error.
+
+Q13. Why does `fetchPokemonByName` store the result using `data.id` (a number)
+     rather than the `name` string?
+-------------------------------------------------------------------------------
+A: The cache is keyed by numeric ID (`Map<number, PokemonData>`). Storing by
+   `data.id` means that if the same Pokémon is later requested by ID (e.g.
+   `fetchPokemonById(25)` after `fetchPokemonByName("pikachu")`), it will find
+   the cached entry and skip the network request entirely.
+
+Q14. Why does `fetchPokemonByName` call `name.toLowerCase()` before building
+     the URL?
+----------------------------------------------------------------------------
+A: The PokéAPI expects lowercase names in the URL (e.g. `/pokemon/pikachu`).
+   If the user passes "Pikachu" or "PIKACHU", the request would fail with a 404.
+   Calling `.toLowerCase()` normalises the input so the function works
+   regardless of how the caller capitalises the name.
+
+Q15. What is `import type` and how is it different from a regular `import`?
+---------------------------------------------------------------------------
+A: `import type` imports only the TypeScript type information — it is completely
+   erased when the code is compiled to JavaScript and produces no runtime code.
+   A regular `import` would also be erased for pure types, but using `import type`
+   makes the intent explicit and prevents accidentally importing a value that
+   only exists as a type, which would cause a runtime error.
